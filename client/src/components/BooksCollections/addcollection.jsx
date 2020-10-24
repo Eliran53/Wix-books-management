@@ -25,7 +25,7 @@ function AddCollection() {
       console.log(error);
     }
   };
-  useEffect(() => {}, setInput);
+  useEffect(() => {}, [input]);
   return (
     <div>
       <TextField

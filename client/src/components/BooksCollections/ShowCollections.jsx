@@ -11,7 +11,6 @@ import {
   ListItem,
   Grid,
   IconButton,
-  Typography,
   ListItemText,
 } from "@material-ui/core";
 import ImportContactsTwoToneIcon from "@material-ui/icons/ImportContactsTwoTone";
@@ -41,8 +40,8 @@ const useStyles = makeStyles((theme) => ({
 function ShowCollections() {
   const list = useContext(UserContext).collectionsData;
   const [bookName, setBookName] = useState("");
-  const [collectionIndex, setCollectionIndex] = useState(0);
-  const [collectionName, setCollectionsName] = useState("");
+  const [collectionIndex, setCollectionIndex] = useState("");
+  const [collectionName, setCollectionsName] = useState();
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
   const handleClick = (event) => {
@@ -56,11 +55,11 @@ function ShowCollections() {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
-  const deleteBook = () => {
+  const deleteBook = (props) => {
     try {
-      const index = list.indexOf(collectionName);
-      const i = list[index].books.indexOf(bookName);
-      list[index].books[i].splice(i, 1);
+      
+      const i = list[0].books.indexOf(props);
+      list[0].books.splice(i, 1);
     } catch (error) {
       console.log(error);
     }
@@ -78,12 +77,16 @@ function ShowCollections() {
     setCollectionsName(e.target.value);
     list[collectionIndex].name = collectionName;
   };
-  useEffect(() => {}, []);
+  const onName = (props) => {
+    setCollectionsName(props);
+    
+  };
+  // useEffect(() => {}, [list]);
   return (
     <div>
       <br></br>
       {list.length !== 0
-        ? list.map((collection, i) => {
+        ? list.map((object, i) => {
             return (
               <div className={classes.root}>
                 <Grid item xs={12} md={6}>
@@ -92,9 +95,8 @@ function ShowCollections() {
                     aria-describedby={id}
                     variant="contained"
                     color="primary"
-                    onClick={handleClick}
-                  >
-                    {collection.name}
+                    onClick={handleClick}>
+                    {object.name}
                   </Button>
                   <Popover
                     id={id}
@@ -122,13 +124,14 @@ function ShowCollections() {
                     className={classes.root}
                     edge="start"
                     aria-label="delete"
-                    onClick={() => (
-                      setCollectionsName(collection.name), deleteCollection()
-                    )}
+                    onClick={() => {
+                      setCollectionsName(object.name);
+                      deleteCollection();
+                    }}
                   >
                     <DeleteIcon />
                   </IconButton>
-                  {collection.books.map((book, index) => {
+                  {object.books.map((book, index) => {
                     return (
                       <div className={classes.demo}>
                         <ListItem>
@@ -142,11 +145,7 @@ function ShowCollections() {
                           <IconButton
                             edge="end"
                             aria-label="delete"
-                            onClick={() => {
-                              setCollectionsName(collection.name);
-                              setBookName(book.title);
-                              deleteBook();
-                            }}
+                            onClick={()=>{deleteBook(object.books[index])}}
                           >
                             <DeleteIcon />
                           </IconButton>
